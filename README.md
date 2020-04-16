@@ -12,22 +12,20 @@ The project uses Java 1.8, Maven for managing project dependencies and Jsoup lib
 ## Building and Running
 
 
-### Packaging
-
-To build an executable `.jar`:
-
-```bash
-mvn clean package
-```
-
 ### Running From Command Line
+
+##Running the app
 
 If the URI Parameter is provided then it is considered otherwsie the URL specified in the task is used
 
-To run the `.jar`:
+```bash
+mvn spring-boot:run -Drun.arguments=(URI Optional)
+```
+
+## Running Tests
 
 ```bash
-java -jar target/sainsburys-scraper-0.0.1-SNAPSHOT.jar <URI Parameter(Optional)>
+mvn clean tests
 ```
 
 ### Improvements
