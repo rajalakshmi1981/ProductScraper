@@ -19,19 +19,14 @@ public class ProductScraperController
 	
     public void scrapeWebpageFromUri(final URI inputUri)
     {
-    	System.out.println("Scraping webpage from link: " + inputUri + "\n");
-    	
     	try
     	{
     		FinalResult jsonObject = scraperService.getJsonModelFromUri(inputUri);
     	
-    		System.out.println("\nThe resulting JSON object:\n");
-    		
     		ObjectMapper objectMapper = new ObjectMapper();
     		
     		System.out.println(objectMapper.writeValueAsString(jsonObject));
     		
-    		System.out.println("\nFinished scraping.\n");
     	}
     	catch (MalformedURLException e)
     	{

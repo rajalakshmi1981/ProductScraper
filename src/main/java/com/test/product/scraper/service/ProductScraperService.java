@@ -19,31 +19,22 @@ import com.test.product.scraper.model.Total;
 @Service
 public class ProductScraperService
 {
-	private static final String DOMAIN_URL = "https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/";
-	private static final String LINK_SANITISING_PATTERN = "(../)+";
+	private static final String MAIN_URL = "https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/";
+	private static final String LINK_PATTERN = "(../)+";
 	
-	private static final String OBJECT_SELECTOR = "ul.productLister a";
-	private static final String OBJECT_HREF_SELECTOR = "href";
+	private static final String PRODUCTLIST_SELECTOR = "ul.productLister a";
+	private static final String PRODUCTLIST_HREF_SELECTOR = "href";
 	
 	public FinalResult getJsonModelFromUri(URI webpageUri) throws MalformedURLException, IOException
 	{
 		Document webpage = Jsoup.connect(webpageUri.toURL().toString()).get();
 		
-		Set<String> allScrapedObjectsLinks = webpage.select(OBJECT_SELECTOR).stream()
-			.map(elem -> elem.attr(OBJECT_HREF_SELECTOR))
-			.map(elem -> DOMAIN_URL + elem.replaceFirst(LINK_SANITISING_PATTERN, ""))
+		Set<String> allScrapedObjectsLinks = webpage.select(PRODUCTLIST_SELECTOR).stream()
+			.map(elem -> elem.attr(PRODUCTLIST_HREF_SELECTOR))
+			.map(elem -> MAIN_URL + elem.replaceFirst(LINK_PATTERN, ""))
 			.filter(elem -> elem.contains("berries-cherries-currants"))
 			.collect(Collectors.toSet());
-		
-		// -- DEBUG
-		System.out.println("Found the following links:");
 	
-		for (String link : allScrapedObjectsLinks)
-		{
-			System.out.println(link);
-		}
-	
-		// call the method to parse all found links and return the JsonModel object	
 		return parseAllScrapedObjectsLinks(allScrapedObjectsLinks);
 	}
 	
@@ -61,11 +52,11 @@ public class ProductScraperService
 			Document productPage = Jsoup.connect(link).get();
 			
 			ProductDetails scrapedObject = new ProductDetails();
-			scrapedObject.setTitle(ProductScraperServiceHelper.getScrapedObjectTitle(link, productPage));
-			if(ProductScraperServiceHelper.getScrapedObjectKcal(link, productPage) != null)
-				scrapedObject.setKcalPerHundredGrams(ProductScraperServiceHelper.getScrapedObjectKcal(link, productPage));
-			scrapedObject.setUnitPrice(ProductScraperServiceHelper.getScrapedObjectUnitPrice(link, productPage));
-			scrapedObject.setDescription(ProductScraperServiceHelper.getScrapedObjectDescription(link, productPage));
+			scrapedObject.setTitle(ProductScraper.getTitle(productPage));
+			if(ProductScraper.getKcal(productPage) != null)
+				scrapedObject.setKcalPerHundredGrams(ProductScraper.getKcal(productPage));
+			scrapedObject.setUnitPrice(ProductScraper.getPrice(productPage));
+			scrapedObject.setDescription(ProductScraper.getDescription(productPage));
 				
 			scrapedObjects.add(scrapedObject);		
 			
